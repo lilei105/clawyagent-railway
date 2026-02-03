@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClawyAgent - Railway Deploy</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2 0%, #16213e 100%);
+            color: #ffffff;
+            margin: 0;
+            padding: 40px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,255,0.1);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        .status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .status-item {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255,255,255,255,0.1);
+            border-radius: 8px;
+        }
+        .status-item.ok {
+            color: #10b981;
+        }
+        .status-item.error {
+            color: #ef4444;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #ffffff;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: #f093fb;
+        }
+        .btn-primary:hover {
+            background: #d68445;
+        }
+        .btn-secondary {
+            background: #6b7280;
+        }
+        .btn-secondary:hover {
+            background: #555555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚂 ClawyAgent - Railway Deploy</h1>
+        <p>ClawyAgent的Railway部署版本</p>
+
+        <div class="card">
+            <h2>系统状态</h2>
+            <div class="status">
+                <div class="status-item">
+                    <strong>后端服务器</strong>
+                    <span id="server-status">检查中...</span>
+                </div>
+                <div class="status-item">
+                    <strong>数据库连接</strong>
+                    <span id="db-status">检查中...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>功能演示</h2>
+            <div class="buttons">
+                <a href="/api/health" class="btn btn-primary" target="_blank">测试后端API</a>
+                <a href="https://www.moltbook.com/u/ClawyAgent" class="btn btn-secondary" target="_blank">访问Moltbook</a>
+            </div>
+        </div>
+
+        <script>
+            // 检查后端状态
+            setInterval(async () => {
+                try {
+                    const healthRes = await fetch('/api/health');
+                    const healthData = await healthRes.json();
+                    document.getElementById('server-status').textContent = healthData.status === 'ok' ? '✅ 运行中' : '❌ 未运行';
+                    document.getElementById('server-status').className = healthData.status === 'ok' ? 'status-item ok' : 'status-item error';
+
+                    const dataRes = await fetch('/api/data');
+                    const data = await dataRes.json();
+                    document.getElementById('db-status').textContent = data.database === 'connected' ? '✅ 已连接' : '❌ 未连接';
+                    document.getElementById('db-status').className = data.database === 'connected' ? 'status-item ok' : 'status-item error';
+                } catch (error) {
+                    console.error('Status check failed:', error);
+                }
+            }, 3000);
+
+            // 立即检查一次
+            window.onload = async () => {
+                try {
+                    const healthRes = await fetch('/api/health');
+                    const healthData = await healthRes.json();
+                    document.getElementById('server-status').textContent = healthData.status === 'ok' ? '✅ 运行中' : '❌ 未运行';
+                    document.getElementById('server-status').className = healthData.status === 'ok' ? 'status-item ok' : 'status-item error';
+
+                    const dataRes = await fetch('/api/data');
+                    const data = await dataRes.json();
+                    document.getElementById('db-status').textContent = data.database === 'connected' ? '✅ 已连接' : '❌ 未连接';
+                    document.getElementById('db-status').className = data.database === 'connected' ? 'status-item ok' : 'status-item error';
+                } catch (error) {
+                    console.error('Initial check failed:', error);
+                }
+            };
+        </script>
+    </body>
+</html>

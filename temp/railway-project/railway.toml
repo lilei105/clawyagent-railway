@@ -1,0 +1,7 @@
+[build]
+builder = "NIXPACKS_BUILDER"
+buildCommand = "npm install && npm run build"
+
+[deploy]
+# Railway会自动检测并部署
+# 只需连接GitHub仓库，不需要额外配置
